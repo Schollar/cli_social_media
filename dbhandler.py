@@ -57,7 +57,7 @@ class dbInteraction:
                 "select exploits.id, content from exploits inner join hackers on exploits.user_id = hackers.id where alias =?", [username])
             posts = cursor.fetchall()
         except:
-            print('Oh no something happened getting the items.')
+            print('Oh no something happened getting your posts.')
         self.db_disconnect(conn, cursor)
         for post in posts:
             print(post[0], '.', post[1])
@@ -67,15 +67,18 @@ class dbInteraction:
 
     def make_post(self, username):
         userid = None
-        content = input('Write your exploit:')
-        conn, cursor = self.db_connect()
-        cursor.execute(
-            "select id from hackers where alias =?", [username, ])
-        user = cursor.fetchone()
-        userid = user[0]
-        cursor.execute(
-            "INSERT INTO exploits(content, user_id) VALUES(?, ?)", [content, userid])
-        conn.commit()
+        try:
+            content = input('Write your exploit:')
+            conn, cursor = self.db_connect()
+            cursor.execute(
+                "select id from hackers where alias =?", [username, ])
+            user = cursor.fetchone()
+            userid = user[0]
+            cursor.execute(
+                "INSERT INTO exploits(content, user_id) VALUES(?, ?)", [content, userid])
+            conn.commit()
+        except:
+            print('Something happened with making your post. Please try again.')
         self.db_disconnect(conn, cursor)
  # Function that takes in the username, and runs a select query to find all posts that DO NOT belong to user.
 
@@ -87,7 +90,7 @@ class dbInteraction:
                 "select exploits.id, content, alias from exploits inner join hackers on exploits.user_id = hackers.id where alias !=?", [username])
             posts = cursor.fetchall()
         except:
-            print('Oh no something happened getting the items.')
+            print('Oh no something happened getting the other users postss.')
         self.db_disconnect(conn, cursor)
         for post in posts:
             print(post[2], ': ', post[1])
